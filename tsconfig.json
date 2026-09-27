@@ -1,20 +1,15 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "preserve",
-    "moduleResolution": "bundler",
-
+    "module": "Preserve",
+    "moduleResolution": "Bundler",
     "rootDir": "./src",
     "outDir": "./dist",
-
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
-    "types": [
-      "node"
-    ]
+    "types": ["node"]
   },
   "include": ["src"]
 }
