@@ -44,7 +44,8 @@ export const login = async (req: Request, res: Response) => {
     const user = await loginUser(result.data.email, result.data.password);
 
     return res.status(200).json({
-      user,
+      user: user.user,
+      accessToken: user.accessToken,
     });
   } catch (error) {
     if (error instanceof Error && error.message === "Invalid credentials") {
