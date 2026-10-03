@@ -1,9 +1,41 @@
 // use prisma-8
 
+enum WorkspaceRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  password  String
-  createdAt TimestamptzString @default(now())
-  updatedAt temporal.updatedAtString()
+  id           Int           @id @default(autoincrement())
+  email        String        @unique
+  password     String
+  createdAt    TimestamptzString @default(now())
+  updatedAt    temporal.updatedAtString()
+
+  memberships  Membership[]
+}
+
+model Workspace {
+  id           Int           @id @default(autoincrement())
+  name         String
+  slug         String        @unique
+  createdAt    TimestamptzString @default(now())
+  updatedAt    temporal.updatedAtString()
+
+  memberships  Membership[]
+}
+
+model Membership {
+  id           Int           @id @default(autoincrement())
+  userId       Int
+  workspaceId  Int
+  role         WorkspaceRole @default(MEMBER)
+  createdAt    TimestamptzString @default(now())
+  updatedAt    temporal.updatedAtString()
+
+  user         User      @relation(fields: [userId], references: [id])
+  workspace    Workspace @relation(fields: [workspaceId], references: [id])
+
+  @@unique([userId, workspaceId])
 }
