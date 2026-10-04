@@ -20,3 +20,7 @@ export const createWorkspace = async (
     return workspace;
   });
 };
+
+export const listWorkspaces = async (userId: number) => {
+  return db.orm.public.Membership.where({ userId }).all();
+};
