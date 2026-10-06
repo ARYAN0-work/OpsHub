@@ -6,6 +6,10 @@ declare global {
       user?: {
         id: number;
       };
+      workspace?: {
+        id: number;
+        role: "OWNER" | "ADMIN" | "MEMBER";
+      };
     }
   }
 }
