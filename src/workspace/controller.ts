@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { createWorkspaceSchema } from "./schema";
-import { createWorkspace, listWorkspaces } from "./service";
+import { createWorkspace, listWorkspaces, getWorkspace } from "./service";
 
 export const create = async (req: Request, res: Response) => {
   const result = createWorkspaceSchema.safeParse(req.body);
@@ -36,5 +36,26 @@ export const list = async (req: Request, res: Response) => {
 
   return res.status(200).json({
     workspaces,
+  });
+};
+
+export const get = async (req: Request, res: Response) => {
+  if (!req.workspace) {
+    return res.status(403).json({
+      error: "Forbidden",
+    });
+  }
+
+  const workspace = await getWorkspace(req.workspace.id);
+
+  if (!workspace) {
+    return res.status(404).json({
+      error: "Workspace not found",
+    });
+  }
+
+  return res.status(200).json({
+    workspace,
+    role: req.workspace.role,
   });
 };
