@@ -1,6 +1,11 @@
 import type { Request, Response } from "express";
 import { createWorkspaceSchema } from "./schema";
-import { createWorkspace, listWorkspaces, getWorkspace } from "./service";
+import {
+  createWorkspace,
+  listWorkspaces,
+  getWorkspace,
+  deleteWorkspace,
+} from "./service";
 
 export const create = async (req: Request, res: Response) => {
   const result = createWorkspaceSchema.safeParse(req.body);
@@ -58,4 +63,16 @@ export const get = async (req: Request, res: Response) => {
     workspace,
     role: req.workspace.role,
   });
+};
+
+export const remove = async (req: Request, res: Response) => {
+  if (!req.workspace) {
+    return res.status(403).json({
+      error: "Forbidden",
+    });
+  }
+
+  await deleteWorkspace(req.workspace.id);
+
+  return res.status(204).send();
 };
