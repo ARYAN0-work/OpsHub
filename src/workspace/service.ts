@@ -28,3 +28,7 @@ export const listWorkspaces = async (userId: number) => {
 export const getWorkspace = async (workspaceId: number) => {
   return db.orm.public.Workspace.where({ id: workspaceId }).all().first();
 };
+
+export const deleteWorkspace = async (workspaceId: number) => {
+  await db.orm.public.Workspace.where({ id: workspaceId }).delete();
+};
