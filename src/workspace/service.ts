@@ -22,5 +22,5 @@ export const createWorkspace = async (
 };
 
 export const listWorkspaces = async (userId: number) => {
-  return db.orm.public.Membership.where({ userId }).all();
+  return db.orm.public.Membership.where({ userId }).include("workspace").all();
 };
