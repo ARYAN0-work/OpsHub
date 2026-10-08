@@ -12,6 +12,7 @@ import {
   addMember,
   listMembers,
   updateMemberRole,
+  removeMember as removeMemberService,
 } from "./service";
 
 export const create = async (req: Request, res: Response) => {
@@ -187,6 +188,42 @@ export const updateRole = async (req: Request, res: Response) => {
     ) {
       return res.status(403).json({
         error: "Cannot change owner role",
+      });
+    }
+
+    throw error;
+  }
+};
+
+export const removeMember = async (req: Request, res: Response) => {
+  if (!req.workspace) {
+    return res.status(403).json({
+      error: "Forbidden",
+    });
+  }
+
+  const userId = Number(req.params.userId);
+
+  if (!Number.isInteger(userId) || userId <= 0) {
+    return res.status(400).json({
+      error: "Invalid user ID",
+    });
+  }
+
+  try {
+    await removeMemberService(req.workspace.id, userId);
+
+    return res.status(204).send();
+  } catch (error) {
+    if (error instanceof Error && error.message === "Membership not found") {
+      return res.status(404).json({
+        error: "Membership not found",
+      });
+    }
+
+    if (error instanceof Error && error.message === "Cannot remove owner") {
+      return res.status(403).json({
+        error: "Cannot remove owner",
       });
     }
 

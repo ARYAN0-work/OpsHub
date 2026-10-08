@@ -8,6 +8,7 @@ import {
   add,
   members,
   updateRole,
+  removeMember,
 } from "./controller";
 import { workspaceContext } from "./middleware";
 import { requireRole } from "./rbac";
@@ -38,6 +39,13 @@ router.patch(
   workspaceContext,
   requireRole("OWNER"),
   updateRole,
+);
+router.delete(
+  "/:workspaceId/members/:userId",
+  requireAuth,
+  workspaceContext,
+  requireRole("OWNER", "ADMIN"),
+  removeMember,
 );
 
 export default router;
