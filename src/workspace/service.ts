@@ -1,5 +1,5 @@
 import { db } from "../prisma/db";
-import type { CreateWorkspaceInput } from "./schema";
+import type { CreateWorkspaceInput, AddMemberInput } from "./schema";
 
 export const createWorkspace = async (
   userId: number,
@@ -31,4 +31,31 @@ export const getWorkspace = async (workspaceId: number) => {
 
 export const deleteWorkspace = async (workspaceId: number) => {
   await db.orm.public.Workspace.where({ id: workspaceId }).delete();
+};
+
+export const addMember = async (workspaceId: number, input: AddMemberInput) => {
+  const user = await db.orm.public.User.where({ id: input.userId })
+    .all()
+    .first();
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  const existingMembership = await db.orm.public.Membership.where({
+    userId: input.userId,
+    workspaceId,
+  })
+    .all()
+    .first();
+
+  if (existingMembership) {
+    throw new Error("User is already a member");
+  }
+
+  return db.orm.public.Membership.create({
+    userId: input.userId,
+    workspaceId,
+    role: input.role,
+  });
 };
