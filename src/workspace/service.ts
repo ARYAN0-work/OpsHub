@@ -59,3 +59,7 @@ export const addMember = async (workspaceId: number, input: AddMemberInput) => {
     role: input.role,
   });
 };
+
+export const listMembers = async (workspaceId: number) => {
+  return db.orm.public.Membership.where({ workspaceId }).include("user").all();
+};
