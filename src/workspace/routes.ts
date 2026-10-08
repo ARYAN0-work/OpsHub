@@ -1,6 +1,14 @@
 import { Router } from "express";
 import { requireAuth } from "../auth/middleware";
-import { create, get, list, remove, add, members } from "./controller";
+import {
+  create,
+  get,
+  list,
+  remove,
+  add,
+  members,
+  updateRole,
+} from "./controller";
 import { workspaceContext } from "./middleware";
 import { requireRole } from "./rbac";
 
@@ -24,5 +32,12 @@ router.post(
   add,
 );
 router.get("/:workspaceId/members", requireAuth, workspaceContext, members);
+router.patch(
+  "/:workspaceId/members/:userId",
+  requireAuth,
+  workspaceContext,
+  requireRole("OWNER"),
+  updateRole,
+);
 
 export default router;
