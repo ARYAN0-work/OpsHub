@@ -1,5 +1,9 @@
 import { db } from "../prisma/db";
-import type { CreateWorkspaceInput, AddMemberInput } from "./schema";
+import type {
+  CreateWorkspaceInput,
+  AddMemberInput,
+  UpdateMemberRoleInput,
+} from "./schema";
 
 export const createWorkspace = async (
   userId: number,
@@ -62,4 +66,32 @@ export const addMember = async (workspaceId: number, input: AddMemberInput) => {
 
 export const listMembers = async (workspaceId: number) => {
   return db.orm.public.Membership.where({ workspaceId }).include("user").all();
+};
+
+export const updateMemberRole = async (
+  workspaceId: number,
+  userId: number,
+  input: UpdateMemberRoleInput,
+) => {
+  const membership = await db.orm.public.Membership.where({
+    workspaceId,
+    userId,
+  })
+    .all()
+    .first();
+
+  if (!membership) {
+    throw new Error("Membership not found");
+  }
+
+  if (membership.role === "OWNER") {
+    throw new Error("Cannot change owner role");
+  }
+
+  return db.orm.public.Membership.where({
+    workspaceId,
+    userId,
+  }).update({
+    role: input.role,
+  });
 };
