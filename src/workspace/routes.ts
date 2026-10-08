@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { requireAuth } from "../auth/middleware";
-import { create, get, list, remove } from "./controller";
+import { create, get, list, remove, add } from "./controller";
 import { workspaceContext } from "./middleware";
 import { requireRole } from "./rbac";
 
@@ -15,6 +15,13 @@ router.delete(
   workspaceContext,
   requireRole("OWNER"),
   remove,
+);
+router.post(
+  "/:workspaceId/members",
+  requireAuth,
+  workspaceContext,
+  requireRole("OWNER", "ADMIN"),
+  add,
 );
 
 export default router;

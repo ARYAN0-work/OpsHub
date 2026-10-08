@@ -1,10 +1,11 @@
 import type { Request, Response } from "express";
-import { createWorkspaceSchema } from "./schema";
+import { createWorkspaceSchema, addMemberSchema } from "./schema";
 import {
   createWorkspace,
   listWorkspaces,
   getWorkspace,
   deleteWorkspace,
+  addMember,
 } from "./service";
 
 export const create = async (req: Request, res: Response) => {
@@ -75,4 +76,46 @@ export const remove = async (req: Request, res: Response) => {
   await deleteWorkspace(req.workspace.id);
 
   return res.status(204).send();
+};
+
+export const add = async (req: Request, res: Response) => {
+  if (!req.workspace) {
+    return res.status(403).json({
+      error: "Forbidden",
+    });
+  }
+
+  const result = addMemberSchema.safeParse(req.body);
+
+  if (!result.success) {
+    return res.status(400).json({
+      error: "Invalid request",
+      details: result.error.issues,
+    });
+  }
+
+  try {
+    const membership = await addMember(req.workspace.id, result.data);
+
+    return res.status(201).json({
+      membership,
+    });
+  } catch (error) {
+    if (error instanceof Error && error.message === "User not found") {
+      return res.status(404).json({
+        error: "User not found",
+      });
+    }
+
+    if (
+      error instanceof Error &&
+      error.message === "User is already a member"
+    ) {
+      return res.status(409).json({
+        error: "User is already a member",
+      });
+    }
+
+    throw error;
+  }
 };
