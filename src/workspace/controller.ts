@@ -211,7 +211,7 @@ export const removeMember = async (req: Request, res: Response) => {
   }
 
   try {
-    await removeMemberService(req.workspace.id, userId);
+    await removeMemberService(req.workspace.id, userId, req.workspace.role);
 
     return res.status(204).send();
   } catch (error) {

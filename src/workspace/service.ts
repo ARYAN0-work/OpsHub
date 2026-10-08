@@ -96,7 +96,11 @@ export const updateMemberRole = async (
   });
 };
 
-export const removeMember = async (workspaceId: number, userId: number) => {
+export const removeMember = async (
+  workspaceId: number,
+  userId: number,
+  requesterRole: "OWNER" | "ADMIN" | "MEMBER",
+) => {
   const membership = await db.orm.public.Membership.where({
     workspaceId,
     userId,
@@ -110,6 +114,10 @@ export const removeMember = async (workspaceId: number, userId: number) => {
 
   if (membership.role === "OWNER") {
     throw new Error("Cannot remove owner");
+  }
+
+  if (requesterRole === "ADMIN" && membership.role === "ADMIN") {
+    throw new Error("Admin cannot remove another admin");
   }
 
   await db.orm.public.Membership.where({
