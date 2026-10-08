@@ -11,3 +11,10 @@ export const createWorkspaceSchema = z.object({
 });
 
 export type CreateWorkspaceInput = z.infer<typeof createWorkspaceSchema>;
+
+export const addMemberSchema = z.object({
+  userId: z.number().int().positive(),
+  role: z.enum(["ADMIN", "MEMBER"]),
+});
+
+export type AddMemberInput = z.infer<typeof addMemberSchema>;
