@@ -6,6 +6,7 @@ import {
   getWorkspace,
   deleteWorkspace,
   addMember,
+  listMembers,
 } from "./service";
 
 export const create = async (req: Request, res: Response) => {
@@ -118,4 +119,18 @@ export const add = async (req: Request, res: Response) => {
 
     throw error;
   }
+};
+
+export const members = async (req: Request, res: Response) => {
+  if (!req.workspace) {
+    return res.status(403).json({
+      error: "Forbidden",
+    });
+  }
+
+  const members = await listMembers(req.workspace.id);
+
+  return res.status(200).json({
+    members,
+  });
 };
