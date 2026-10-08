@@ -95,3 +95,25 @@ export const updateMemberRole = async (
     role: input.role,
   });
 };
+
+export const removeMember = async (workspaceId: number, userId: number) => {
+  const membership = await db.orm.public.Membership.where({
+    workspaceId,
+    userId,
+  })
+    .all()
+    .first();
+
+  if (!membership) {
+    throw new Error("Membership not found");
+  }
+
+  if (membership.role === "OWNER") {
+    throw new Error("Cannot remove owner");
+  }
+
+  await db.orm.public.Membership.where({
+    workspaceId,
+    userId,
+  }).delete();
+};
