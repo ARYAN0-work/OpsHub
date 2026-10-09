@@ -24,3 +24,20 @@ export const updateMemberRoleSchema = z.object({
 });
 
 export type UpdateMemberRoleInput = z.infer<typeof updateMemberRoleSchema>;
+
+export const updateWorkspaceSchema = z
+  .object({
+    name: z.string().trim().min(1).max(100).optional(),
+    slug: z
+      .string()
+      .trim()
+      .min(3)
+      .max(50)
+      .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
+      .optional(),
+  })
+  .refine((data) => data.name !== undefined || data.slug !== undefined, {
+    message: "At least one field must be provided",
+  });
+
+export type UpdateWorkspaceInput = z.infer<typeof updateWorkspaceSchema>;
