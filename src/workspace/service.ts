@@ -35,7 +35,11 @@ export const getWorkspace = async (workspaceId: number) => {
 };
 
 export const deleteWorkspace = async (workspaceId: number) => {
-  await db.orm.public.Workspace.where({ id: workspaceId }).delete();
+  await db.transaction(async (tx) => {
+    await tx.orm.public.Membership.where({ workspaceId }).delete();
+
+    await tx.orm.public.Workspace.where({ id: workspaceId }).delete();
+  });
 };
 
 export const addMember = async (workspaceId: number, input: AddMemberInput) => {
