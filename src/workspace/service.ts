@@ -3,6 +3,7 @@ import type {
   CreateWorkspaceInput,
   AddMemberInput,
   UpdateMemberRoleInput,
+  UpdateWorkspaceInput,
 } from "./schema";
 
 export const createWorkspace = async (
@@ -146,4 +147,19 @@ export const leaveWorkspace = async (workspaceId: number, userId: number) => {
     workspaceId,
     userId,
   }).delete();
+};
+
+export const updateWorkspace = async (
+  workspaceId: number,
+  input: UpdateWorkspaceInput,
+) => {
+  const workspace = await db.orm.public.Workspace.where({ id: workspaceId })
+    .all()
+    .first();
+
+  if (!workspace) {
+    throw new Error("Workspace not found");
+  }
+
+  return db.orm.public.Workspace.where({ id: workspaceId }).update(input);
 };
