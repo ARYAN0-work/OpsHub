@@ -125,3 +125,25 @@ export const removeMember = async (
     userId,
   }).delete();
 };
+
+export const leaveWorkspace = async (workspaceId: number, userId: number) => {
+  const membership = await db.orm.public.Membership.where({
+    workspaceId,
+    userId,
+  })
+    .all()
+    .first();
+
+  if (!membership) {
+    throw new Error("Membership not found");
+  }
+
+  if (membership.role === "OWNER") {
+    throw new Error("Owner cannot leave workspace");
+  }
+
+  await db.orm.public.Membership.where({
+    workspaceId,
+    userId,
+  }).delete();
+};
