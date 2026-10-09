@@ -3,6 +3,7 @@ import {
   createWorkspaceSchema,
   addMemberSchema,
   updateMemberRoleSchema,
+  updateWorkspaceSchema,
 } from "./schema";
 import {
   createWorkspace,
@@ -14,6 +15,7 @@ import {
   updateMemberRole,
   removeMember as removeMemberService,
   leaveWorkspace,
+  updateWorkspace,
 } from "./service";
 
 export const create = async (req: Request, res: Response) => {
@@ -256,6 +258,37 @@ export const leave = async (req: Request, res: Response) => {
     ) {
       return res.status(403).json({
         error: "Owner cannot leave workspace",
+      });
+    }
+
+    throw error;
+  }
+};
+
+export const update = async (req: Request, res: Response) => {
+  if (!req.workspace) {
+    return res.status(403).json({
+      error: "Forbidden",
+    });
+  }
+
+  const result = updateWorkspaceSchema.safeParse(req.body);
+
+  if (!result.success) {
+    return res.status(400).json({
+      error: "Invalid request",
+      details: result.error.issues,
+    });
+  }
+
+  try {
+    const workspace = await updateWorkspace(req.workspace.id, result.data);
+
+    return res.status(200).json({ workspace });
+  } catch (error) {
+    if (error instanceof Error && error.message === "Workspace not found") {
+      return res.status(404).json({
+        error: "Workspace not found",
       });
     }
 
