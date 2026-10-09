@@ -84,7 +84,6 @@ export const remove = async (req: Request, res: Response) => {
   }
 
   await deleteWorkspace(req.workspace.id);
-
   return res.status(204).send();
 };
 
