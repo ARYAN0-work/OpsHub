@@ -13,6 +13,7 @@ import {
   listMembers,
   updateMemberRole,
   removeMember as removeMemberService,
+  leaveWorkspace,
 } from "./service";
 
 export const create = async (req: Request, res: Response) => {
@@ -224,6 +225,37 @@ export const removeMember = async (req: Request, res: Response) => {
     if (error instanceof Error && error.message === "Cannot remove owner") {
       return res.status(403).json({
         error: "Cannot remove owner",
+      });
+    }
+
+    throw error;
+  }
+};
+
+export const leave = async (req: Request, res: Response) => {
+  if (!req.workspace || !req.user) {
+    return res.status(403).json({
+      error: "Forbidden",
+    });
+  }
+
+  try {
+    await leaveWorkspace(req.workspace.id, req.user.id);
+
+    return res.status(204).send();
+  } catch (error) {
+    if (error instanceof Error && error.message === "Membership not found") {
+      return res.status(404).json({
+        error: "Membership not found",
+      });
+    }
+
+    if (
+      error instanceof Error &&
+      error.message === "Owner cannot leave workspace"
+    ) {
+      return res.status(403).json({
+        error: "Owner cannot leave workspace",
       });
     }
 

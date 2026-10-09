@@ -9,6 +9,7 @@ import {
   members,
   updateRole,
   removeMember,
+  leave,
 } from "./controller";
 import { workspaceContext } from "./middleware";
 import { requireRole } from "./rbac";
@@ -47,5 +48,6 @@ router.delete(
   requireRole("OWNER", "ADMIN"),
   removeMember,
 );
+router.delete("/:workspaceId/leave", requireAuth, workspaceContext, leave);
 
 export default router;
