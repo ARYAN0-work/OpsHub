@@ -39,3 +39,16 @@ model Membership {
 
   @@unique([userId, workspaceId])
 }
+
+model Channel {
+  id           Int           @id @default(autoincrement())
+  name         String
+  description  String?
+  workspaceId  Int
+  createdAt    TimestamptzString @default(now())
+  updatedAt    temporal.updatedAtString()
+
+  workspace    Workspace @relation(fields: [workspaceId], references: [id])
+
+  @@unique([workspaceId, name])
+}

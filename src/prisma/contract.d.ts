@@ -34,9 +34,9 @@ import type {
 } from "@prisma/orm-postgres/contract/types";
 
 export type StorageHash =
-  StorageHashBase<"3de8a1c1ee73d61ab17387428cd84b5fc7c8ad7f765bee5a057bd1ed664c3b38">;
+  StorageHashBase<"a5b7bcde41058a48765457e77ac6adde2afc67b1f887497ee858d70ee2a1c5f9">;
 export type ExecutionHash =
-  ExecutionHashBase<"3e2ffe325ef00684e8d19d18132974b18152cef12fdc1622ae739cf17b3e0919">;
+  ExecutionHashBase<"47075c8e99c58c4bf257ef791aca00416f8f51c98e1ac7d28b37616c48cf1dfe">;
 export type ProfileHash =
   ProfileHashBase<"3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2">;
 
@@ -538,6 +538,14 @@ type DefaultLiteralValue<
 
 export type FieldOutputTypes = {
   readonly public: {
+    readonly Channel: {
+      readonly createdAt: CodecTypes["pg/timestamptz-string@1"]["output"];
+      readonly description: CodecTypes["pg/text@1"]["output"] | null;
+      readonly id: CodecTypes["pg/int4@1"]["output"];
+      readonly name: CodecTypes["pg/text@1"]["output"];
+      readonly updatedAt: CodecTypes["pg/timestamptz-string@1"]["output"];
+      readonly workspaceId: CodecTypes["pg/int4@1"]["output"];
+    };
     readonly Membership: {
       readonly createdAt: CodecTypes["pg/timestamptz-string@1"]["output"];
       readonly id: CodecTypes["pg/int4@1"]["output"];
@@ -564,6 +572,14 @@ export type FieldOutputTypes = {
 };
 export type FieldInputTypes = {
   readonly public: {
+    readonly Channel: {
+      readonly createdAt: CodecTypes["pg/timestamptz-string@1"]["input"];
+      readonly description: CodecTypes["pg/text@1"]["input"] | null;
+      readonly id: CodecTypes["pg/int4@1"]["input"];
+      readonly name: CodecTypes["pg/text@1"]["input"];
+      readonly updatedAt: CodecTypes["pg/timestamptz-string@1"]["input"];
+      readonly workspaceId: CodecTypes["pg/int4@1"]["input"];
+    };
     readonly Membership: {
       readonly createdAt: CodecTypes["pg/timestamptz-string@1"]["input"];
       readonly id: CodecTypes["pg/int4@1"]["input"];
@@ -590,6 +606,14 @@ export type FieldInputTypes = {
 };
 export type StorageColumnTypes = {
   readonly public: {
+    readonly Channel: {
+      readonly createdAt: CodecTypes["pg/timestamptz-string@1"]["output"];
+      readonly description: CodecTypes["pg/text@1"]["output"] | null;
+      readonly id: CodecTypes["pg/int4@1"]["output"];
+      readonly name: CodecTypes["pg/text@1"]["output"];
+      readonly updatedAt: CodecTypes["pg/timestamptz-string@1"]["output"];
+      readonly workspaceId: CodecTypes["pg/int4@1"]["output"];
+    };
     readonly Membership: {
       readonly createdAt: CodecTypes["pg/timestamptz-string@1"]["output"];
       readonly id: CodecTypes["pg/int4@1"]["output"];
@@ -616,6 +640,14 @@ export type StorageColumnTypes = {
 };
 export type StorageColumnInputTypes = {
   readonly public: {
+    readonly Channel: {
+      readonly createdAt: CodecTypes["pg/timestamptz-string@1"]["input"];
+      readonly description: CodecTypes["pg/text@1"]["input"] | null;
+      readonly id: CodecTypes["pg/int4@1"]["input"];
+      readonly name: CodecTypes["pg/text@1"]["input"];
+      readonly updatedAt: CodecTypes["pg/timestamptz-string@1"]["input"];
+      readonly workspaceId: CodecTypes["pg/int4@1"]["input"];
+    };
     readonly Membership: {
       readonly createdAt: CodecTypes["pg/timestamptz-string@1"]["input"];
       readonly id: CodecTypes["pg/int4@1"]["input"];
@@ -642,6 +674,16 @@ export type StorageColumnInputTypes = {
 };
 
 export namespace Models {
+  export type public_Channel = {
+    createdAt: CodecTypes["pg/timestamptz-string@1"]["output"];
+    description: CodecTypes["pg/text@1"]["output"] | null;
+    id: CodecTypes["pg/int4@1"]["output"];
+    name: CodecTypes["pg/text@1"]["output"];
+    updatedAt: CodecTypes["pg/timestamptz-string@1"]["output"];
+    workspaceId: CodecTypes["pg/int4@1"]["output"];
+    workspace: public_Workspace;
+    readonly [RelationKeys]?: "workspace";
+  };
   export type public_Membership = {
     createdAt: CodecTypes["pg/timestamptz-string@1"]["output"];
     id: CodecTypes["pg/int4@1"]["output"];
@@ -675,6 +717,7 @@ export namespace Models {
 
 export declare const models: {
   public: {
+    Channel: Models.public_Channel;
     Membership: Models.public_Membership;
     User: Models.public_User;
     Workspace: Models.public_Workspace;
@@ -699,6 +742,74 @@ type ContractBase = Omit<
         readonly kind: "postgres-schema";
         readonly entries: {
           readonly table: {
+            readonly Channel: {
+              columns: {
+                readonly createdAt: {
+                  readonly nativeType: "timestamptz";
+                  readonly codecId: "pg/timestamptz-string@1";
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: "function";
+                    readonly expression: "now()";
+                  };
+                };
+                readonly description: {
+                  readonly nativeType: "text";
+                  readonly codecId: "pg/text@1";
+                  readonly nullable: true;
+                };
+                readonly id: {
+                  readonly nativeType: "int4";
+                  readonly codecId: "pg/int4@1";
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: "function";
+                    readonly expression: "autoincrement()";
+                  };
+                };
+                readonly name: {
+                  readonly nativeType: "text";
+                  readonly codecId: "pg/text@1";
+                  readonly nullable: false;
+                };
+                readonly updatedAt: {
+                  readonly nativeType: "timestamptz";
+                  readonly codecId: "pg/timestamptz-string@1";
+                  readonly nullable: false;
+                };
+                readonly workspaceId: {
+                  readonly nativeType: "int4";
+                  readonly codecId: "pg/int4@1";
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ["id"] };
+              uniques: readonly [
+                { readonly columns: readonly ["workspaceId", "name"] },
+              ];
+              indexes: readonly [
+                {
+                  readonly name: "Channel_workspaceId_idx_ba65f874";
+                  readonly prefix: "Channel_workspaceId_idx";
+                  readonly columns: readonly ["workspaceId"];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: "public" & NamespaceId;
+                    readonly tableName: "Channel";
+                    readonly columns: readonly ["workspaceId"];
+                  };
+                  readonly target: {
+                    readonly namespaceId: "public" & NamespaceId;
+                    readonly tableName: "Workspace";
+                    readonly columns: readonly ["id"];
+                  };
+                },
+              ];
+            };
             readonly Membership: {
               columns: {
                 readonly createdAt: {
@@ -888,6 +999,10 @@ type ContractBase = Omit<
   readonly target: "postgres";
   readonly targetFamily: "sql";
   readonly roots: {
+    readonly Channel: {
+      readonly namespace: "public" & NamespaceId;
+      readonly model: "Channel";
+    };
     readonly Membership: {
       readonly namespace: "public" & NamespaceId;
       readonly model: "Membership";
@@ -905,6 +1020,78 @@ type ContractBase = Omit<
     readonly namespaces: {
       readonly public: {
         readonly models: {
+          readonly Channel: {
+            readonly fields: {
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: "scalar";
+                  readonly codecId: "pg/timestamptz-string@1";
+                };
+              };
+              readonly description: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: "scalar";
+                  readonly codecId: "pg/text@1";
+                };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: "scalar";
+                  readonly codecId: "pg/int4@1";
+                };
+              };
+              readonly name: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: "scalar";
+                  readonly codecId: "pg/text@1";
+                };
+              };
+              readonly updatedAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: "scalar";
+                  readonly codecId: "pg/timestamptz-string@1";
+                };
+              };
+              readonly workspaceId: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: "scalar";
+                  readonly codecId: "pg/int4@1";
+                };
+              };
+            };
+            readonly relations: {
+              readonly workspace: {
+                readonly to: {
+                  readonly namespace: "public" & NamespaceId;
+                  readonly model: "Workspace";
+                };
+                readonly cardinality: "N:1";
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ["workspaceId"];
+                  readonly targetFields: readonly ["id"];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: "Channel";
+              readonly namespaceId: "public";
+              readonly fields: {
+                readonly createdAt: { readonly column: "createdAt" };
+                readonly description: { readonly column: "description" };
+                readonly id: { readonly column: "id" };
+                readonly name: { readonly column: "name" };
+                readonly updatedAt: { readonly column: "updatedAt" };
+                readonly workspaceId: { readonly column: "workspaceId" };
+              };
+            };
+          };
           readonly Membership: {
             readonly fields: {
               readonly createdAt: {
@@ -1154,6 +1341,21 @@ type ContractBase = Omit<
     readonly executionHash: ExecutionHash;
     readonly mutations: {
       readonly defaults: readonly [
+        {
+          readonly onCreate: {
+            readonly id: "timestampNow";
+            readonly kind: "generator";
+          };
+          readonly onUpdate: {
+            readonly id: "timestampNow";
+            readonly kind: "generator";
+          };
+          readonly ref: {
+            readonly column: "updatedAt";
+            readonly namespace: "public";
+            readonly table: "Channel";
+          };
+        },
         {
           readonly onCreate: {
             readonly id: "timestampNow";
