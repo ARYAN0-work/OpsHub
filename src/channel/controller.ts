@@ -20,7 +20,21 @@ export const create = async (req: Request, res: Response) => {
     });
   }
 
-  const channel = await createChannel(workspaceId, result.data);
+  try {
+    const channel = await createChannel(workspaceId, result.data);
+    return res.status(201).json({ channel });
+  } catch (error: unknown) {
+    if (
+      typeof error === "object" &&
+      error !== null &&
+      "sqlState" in error &&
+      error.sqlState === "23505"
+    ) {
+      return res.status(409).json({
+        error: "A channel with this name already exists in this workspace",
+      });
+    }
 
-  return res.status(201).json({ channel });
+    throw error;
+  }
 };
