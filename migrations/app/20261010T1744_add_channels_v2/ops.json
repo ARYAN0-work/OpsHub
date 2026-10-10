@@ -1,0 +1,164 @@
+[
+  {
+    "id": "table.Channel",
+    "label": "Create table \"Channel\"",
+    "summary": "Creates table \"Channel\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Channel"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Channel\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Channel\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"Channel\"",
+        "sql": "CREATE TABLE \"public\".\"Channel\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"description\" text,\n  \"id\" SERIAL NOT NULL,\n  \"name\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  \"workspaceId\" int4 NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Channel\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Channel\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.Channel.Channel_workspaceId_name_key",
+    "label": "Add unique constraint on \"Channel\" (workspaceId, name)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "Channel_workspaceId_name_key",
+        "table": "Channel"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"Channel_workspaceId_name_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Channel_workspaceId_name_key",
+          "public",
+          "\"public\".\"Channel\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"Channel_workspaceId_name_key\"",
+        "sql": "ALTER TABLE \"public\".\"Channel\" ADD CONSTRAINT \"Channel_workspaceId_name_key\" UNIQUE (\"workspaceId\", \"name\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"Channel_workspaceId_name_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Channel_workspaceId_name_key",
+          "public",
+          "\"public\".\"Channel\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Channel.Channel_workspaceId_idx_ba65f874",
+    "label": "Create index \"Channel_workspaceId_idx_ba65f874\" on \"Channel\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Channel_workspaceId_idx_ba65f874",
+        "table": "Channel"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Channel_workspaceId_idx_ba65f874\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Channel_workspaceId_idx_ba65f874\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Channel_workspaceId_idx_ba65f874\"",
+        "sql": "CREATE INDEX \"Channel_workspaceId_idx_ba65f874\" ON \"public\".\"Channel\" (\"workspaceId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Channel_workspaceId_idx_ba65f874\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Channel_workspaceId_idx_ba65f874\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.Channel.Channel_workspaceId_fkey",
+    "label": "Add foreign key \"Channel_workspaceId_fkey\" on \"Channel\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "Channel_workspaceId_fkey",
+        "table": "Channel"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"Channel_workspaceId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Channel_workspaceId_fkey",
+          "public",
+          "\"public\".\"Channel\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"Channel_workspaceId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"Channel\"\nADD CONSTRAINT \"Channel_workspaceId_fkey\"\nFOREIGN KEY (\"workspaceId\")\nREFERENCES \"public\".\"Workspace\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"Channel_workspaceId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Channel_workspaceId_fkey",
+          "public",
+          "\"public\".\"Channel\""
+        ]
+      }
+    ]
+  }
+]
