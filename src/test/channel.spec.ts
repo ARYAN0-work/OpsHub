@@ -129,4 +129,12 @@ describe("Channel creation", () => {
       expect.arrayContaining([expect.objectContaining({ name: "backend" })]),
     );
   });
+
+  it("rejects channel listing without authentication", async () => {
+    const response = await request(app).get(
+      `/workspaces/${workspaceId}/channels`,
+    );
+
+    expect(response.status).toBe(401);
+  });
 });
