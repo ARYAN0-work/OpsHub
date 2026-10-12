@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { createChannelSchema } from "./schema";
-import { createChannel } from "./service";
+import { createChannel, listChannels } from "./service";
 
 export const create = async (req: Request, res: Response) => {
   const workspaceId = Number(req.params.workspaceId);
@@ -37,4 +37,16 @@ export const create = async (req: Request, res: Response) => {
 
     throw error;
   }
+};
+
+export const list = async (req: Request, res: Response) => {
+  const workspaceId = Number(req.params.workspaceId);
+
+  if (!Number.isInteger(workspaceId) || workspaceId <= 0) {
+    return res.status(400).json({ error: "Invalid workspace ID" });
+  }
+
+  const channels = await listChannels(workspaceId);
+
+  return res.status(200).json({ channels });
 };
