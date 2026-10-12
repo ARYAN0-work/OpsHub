@@ -116,4 +116,17 @@ describe("Channel creation", () => {
 
     expect(response.status).toBe(409);
   });
+
+  it("lists channels belonging to the workspace", async () => {
+    const response = await request(app)
+      .get(`/workspaces/${workspaceId}/channels`)
+      .set("Authorization", `Bearer ${owner.token}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.channels).toBeInstanceOf(Array);
+    expect(response.body.channels.length).toBeGreaterThan(0);
+    expect(response.body.channels).toEqual(
+      expect.arrayContaining([expect.objectContaining({ name: "backend" })]),
+    );
+  });
 });
