@@ -2,7 +2,7 @@ import { Router } from "express";
 import { requireAuth } from "../auth/middleware";
 import { workspaceContext } from "../workspace/middleware";
 import { requireRole } from "../workspace/rbac";
-import { create, list } from "./controller";
+import { create, list, get } from "./controller";
 
 const router = Router();
 
@@ -15,5 +15,12 @@ router.post(
 );
 
 router.get("/:workspaceId/channels", requireAuth, workspaceContext, list);
+
+router.get(
+  "/:workspaceId/channels/:channelId",
+  requireAuth,
+  workspaceContext,
+  get,
+);
 
 export default router;
