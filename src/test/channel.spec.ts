@@ -137,4 +137,13 @@ describe("Channel creation", () => {
 
     expect(response.status).toBe(401);
   });
+
+  it("allows a MEMBER to list workspace channels", async () => {
+    const response = await request(app)
+      .get(`/workspaces/${workspaceId}/channels`)
+      .set("Authorization", `Bearer ${member.token}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.channels).toBeInstanceOf(Array);
+  });
 });
