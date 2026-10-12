@@ -215,4 +215,137 @@ describe("Channel creation", () => {
 
     expect(response.status).toBe(404);
   });
+
+  it("allows the OWNER to update a channel", async () => {
+    const listResponse = await request(app)
+      .get(`/workspaces/${workspaceId}/channels`)
+      .set("Authorization", `Bearer ${owner.token}`);
+
+    const channel = listResponse.body.channels.find(
+      (item: { name: string }) => item.name === "backend",
+    );
+
+    expect(channel).toBeDefined();
+
+    const response = await request(app)
+      .patch(`/workspaces/${workspaceId}/channels/${channel.id}`)
+      .set("Authorization", `Bearer ${owner.token}`)
+      .send({
+        name: "backend-updated",
+      });
+
+    expect(response.status).toBe(200);
+    expect(response.body.channel).toMatchObject({
+      id: channel.id,
+      name: "backend-updated",
+      workspaceId,
+    });
+  });
+
+  it("allows the OWNER to update only a channel description", async () => {
+    const listResponse = await request(app)
+      .get(`/workspaces/${workspaceId}/channels`)
+      .set("Authorization", `Bearer ${owner.token}`);
+
+    const channel = listResponse.body.channels.find(
+      (item: { name: string }) => item.name === "backend-updated",
+    );
+
+    expect(channel).toBeDefined();
+
+    const response = await request(app)
+      .patch(`/workspaces/${workspaceId}/channels/${channel.id}`)
+      .set("Authorization", `Bearer ${owner.token}`)
+      .send({
+        description: "Updated backend discussions",
+      });
+
+    expect(response.status).toBe(200);
+    expect(response.body.channel).toMatchObject({
+      id: channel.id,
+      name: "backend-updated",
+      description: "Updated backend discussions",
+    });
+  });
+
+  it("rejects an empty channel update", async () => {
+    const listResponse = await request(app)
+      .get(`/workspaces/${workspaceId}/channels`)
+      .set("Authorization", `Bearer ${owner.token}`);
+
+    const channel = listResponse.body.channels.find(
+      (item: { name: string }) => item.name === "backend-updated",
+    );
+
+    expect(channel).toBeDefined();
+
+    const response = await request(app)
+      .patch(`/workspaces/${workspaceId}/channels/${channel.id}`)
+      .set("Authorization", `Bearer ${owner.token}`)
+      .send({});
+
+    expect(response.status).toBe(400);
+  });
+
+  it("returns 404 when updating a channel that does not exist", async () => {
+    const response = await request(app)
+      .patch(`/workspaces/${workspaceId}/channels/999999999`)
+      .set("Authorization", `Bearer ${owner.token}`)
+      .send({
+        name: "nonexistent-channel",
+      });
+
+    expect(response.status).toBe(404);
+  });
+
+  it("prevents a MEMBER from updating a channel", async () => {
+    const listResponse = await request(app)
+      .get(`/workspaces/${workspaceId}/channels`)
+      .set("Authorization", `Bearer ${owner.token}`);
+
+    const channel = listResponse.body.channels.find(
+      (item: { name: string }) => item.name === "backend-updated",
+    );
+
+    expect(channel).toBeDefined();
+
+    const response = await request(app)
+      .patch(`/workspaces/${workspaceId}/channels/${channel.id}`)
+      .set("Authorization", `Bearer ${member.token}`)
+      .send({
+        name: "member-updated-channel",
+      });
+
+    expect(response.status).toBe(403);
+  });
+
+  it("rejects updating a channel to an existing name", async () => {
+    const createResponse = await request(app)
+      .post(`/workspaces/${workspaceId}/channels`)
+      .set("Authorization", `Bearer ${owner.token}`)
+      .send({
+        name: "frontend",
+      });
+
+    expect(createResponse.status).toBe(201);
+
+    const listResponse = await request(app)
+      .get(`/workspaces/${workspaceId}/channels`)
+      .set("Authorization", `Bearer ${owner.token}`);
+
+    const channel = listResponse.body.channels.find(
+      (item: { name: string }) => item.name === "backend-updated",
+    );
+
+    expect(channel).toBeDefined();
+
+    const response = await request(app)
+      .patch(`/workspaces/${workspaceId}/channels/${channel.id}`)
+      .set("Authorization", `Bearer ${owner.token}`)
+      .send({
+        name: "frontend",
+      });
+
+    expect(response.status).toBe(409);
+  });
 });

@@ -88,7 +88,9 @@ export const update = async (req: Request, res: Response) => {
     !Number.isInteger(channelId) ||
     channelId <= 0
   ) {
-    return res.status(400).json({ error: "Invalid workspace or channel ID" });
+    return res.status(400).json({
+      error: "Invalid workspace or channel ID",
+    });
   }
 
   const result = updateChannelSchema.safeParse(req.body);
@@ -100,11 +102,28 @@ export const update = async (req: Request, res: Response) => {
     });
   }
 
-  const channel = await updateChannel(workspaceId, channelId, result.data);
+  try {
+    const channel = await updateChannel(workspaceId, channelId, result.data);
 
-  if (!channel) {
-    return res.status(404).json({ error: "Channel not found" });
+    if (!channel) {
+      return res.status(404).json({
+        error: "Channel not found",
+      });
+    }
+
+    return res.status(200).json({ channel });
+  } catch (error: unknown) {
+    if (
+      typeof error === "object" &&
+      error !== null &&
+      "sqlState" in error &&
+      error.sqlState === "23505"
+    ) {
+      return res.status(409).json({
+        error: "A channel with this name already exists in this workspace",
+      });
+    }
+
+    throw error;
   }
-
-  return res.status(200).json({ channel });
 };
