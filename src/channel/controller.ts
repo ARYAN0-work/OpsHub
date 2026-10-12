@@ -5,6 +5,7 @@ import {
   listChannels,
   getChannel,
   updateChannel,
+  deleteChannel,
 } from "./service";
 
 export const create = async (req: Request, res: Response) => {
@@ -126,4 +127,33 @@ export const update = async (req: Request, res: Response) => {
 
     throw error;
   }
+};
+
+export const remove = async (req: Request, res: Response) => {
+  const workspaceId = Number(req.params.workspaceId);
+  const channelId = Number(req.params.channelId);
+
+  if (
+    !Number.isInteger(workspaceId) ||
+    workspaceId <= 0 ||
+    !Number.isInteger(channelId) ||
+    channelId <= 0
+  ) {
+    return res.status(400).json({
+      error: "Invalid workspace or channel ID",
+    });
+  }
+
+  const channel = await deleteChannel(workspaceId, channelId);
+
+  if (!channel) {
+    return res.status(404).json({
+      error: "Channel not found",
+    });
+  }
+
+  return res.status(200).json({
+    message: "Channel deleted successfully",
+    channel,
+  });
 };

@@ -2,7 +2,7 @@ import { Router } from "express";
 import { requireAuth } from "../auth/middleware";
 import { workspaceContext } from "../workspace/middleware";
 import { requireRole } from "../workspace/rbac";
-import { create, list, get, update } from "./controller";
+import { create, list, get, update, remove } from "./controller";
 
 const router = Router();
 
@@ -29,6 +29,14 @@ router.patch(
   workspaceContext,
   requireRole("OWNER", "ADMIN"),
   update,
+);
+
+router.delete(
+  "/:workspaceId/channels/:channelId",
+  requireAuth,
+  workspaceContext,
+  requireRole("OWNER"),
+  remove,
 );
 
 export default router;
