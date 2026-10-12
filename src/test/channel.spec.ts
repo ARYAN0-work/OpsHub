@@ -185,4 +185,34 @@ describe("Channel creation", () => {
 
     expect(response.status).toBe(401);
   });
+
+  it("returns 404 when the channel belongs to another workspace", async () => {
+    const anotherWorkspaceResponse = await request(app)
+      .post("/workspaces")
+      .set("Authorization", `Bearer ${owner.token}`)
+      .send({
+        name: "Another Workspace",
+        slug: `another-workspace-${Date.now()}`,
+      });
+
+    expect(anotherWorkspaceResponse.status).toBe(201);
+
+    const anotherWorkspaceId = anotherWorkspaceResponse.body.workspace.id;
+
+    const listResponse = await request(app)
+      .get(`/workspaces/${workspaceId}/channels`)
+      .set("Authorization", `Bearer ${owner.token}`);
+
+    const channel = listResponse.body.channels.find(
+      (item: { name: string }) => item.name === "backend",
+    );
+
+    expect(channel).toBeDefined();
+
+    const response = await request(app)
+      .get(`/workspaces/${anotherWorkspaceId}/channels/${channel.id}`)
+      .set("Authorization", `Bearer ${owner.token}`);
+
+    expect(response.status).toBe(404);
+  });
 });
