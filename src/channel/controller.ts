@@ -1,6 +1,11 @@
 import type { Request, Response } from "express";
-import { createChannelSchema } from "./schema";
-import { createChannel, listChannels, getChannel } from "./service";
+import { createChannelSchema, updateChannelSchema } from "./schema";
+import {
+  createChannel,
+  listChannels,
+  getChannel,
+  updateChannel,
+} from "./service";
 
 export const create = async (req: Request, res: Response) => {
   const workspaceId = Number(req.params.workspaceId);
@@ -65,6 +70,37 @@ export const get = async (req: Request, res: Response) => {
   }
 
   const channel = await getChannel(workspaceId, channelId);
+
+  if (!channel) {
+    return res.status(404).json({ error: "Channel not found" });
+  }
+
+  return res.status(200).json({ channel });
+};
+
+export const update = async (req: Request, res: Response) => {
+  const workspaceId = Number(req.params.workspaceId);
+  const channelId = Number(req.params.channelId);
+
+  if (
+    !Number.isInteger(workspaceId) ||
+    workspaceId <= 0 ||
+    !Number.isInteger(channelId) ||
+    channelId <= 0
+  ) {
+    return res.status(400).json({ error: "Invalid workspace or channel ID" });
+  }
+
+  const result = updateChannelSchema.safeParse(req.body);
+
+  if (!result.success) {
+    return res.status(400).json({
+      error: "Invalid request",
+      details: result.error.issues,
+    });
+  }
+
+  const channel = await updateChannel(workspaceId, channelId, result.data);
 
   if (!channel) {
     return res.status(404).json({ error: "Channel not found" });
