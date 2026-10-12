@@ -37,3 +37,18 @@ export const updateChannel = async (
     input,
   );
 };
+
+export const deleteChannel = async (workspaceId: number, channelId: number) => {
+  const channel = await getChannel(workspaceId, channelId);
+
+  if (!channel) {
+    return null;
+  }
+
+  await db.orm.public.Channel.where({
+    workspaceId,
+    id: channelId,
+  }).delete();
+
+  return channel;
+};
