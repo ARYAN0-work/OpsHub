@@ -15,3 +15,9 @@ export const createChannel = async (
 export const listChannels = async (workspaceId: number) => {
   return db.orm.public.Channel.where({ workspaceId }).all();
 };
+
+export const getChannel = async (workspaceId: number, channelId: number) => {
+  return db.orm.public.Channel.where({ workspaceId, id: channelId })
+    .all()
+    .first();
+};
