@@ -270,4 +270,49 @@ describe("Workspace API", () => {
 
     expect(accessResponse.status).toBe(403);
   });
+
+  it("allows the OWNER to delete a channel", async () => {
+    const createResponse = await request(app)
+      .post(`/workspaces/${workspaceId}/channels`)
+      .set("Authorization", `Bearer ${owner.token}`)
+      .send({
+        name: "channel-to-delete",
+      });
+
+    expect(createResponse.status).toBe(201);
+
+    const channelId = createResponse.body.channel.id;
+
+    const deleteResponse = await request(app)
+      .delete(`/workspaces/${workspaceId}/channels/${channelId}`)
+      .set("Authorization", `Bearer ${owner.token}`);
+
+    expect(deleteResponse.status).toBe(200);
+    expect(deleteResponse.body.channel.id).toBe(channelId);
+
+    const getResponse = await request(app)
+      .get(`/workspaces/${workspaceId}/channels/${channelId}`)
+      .set("Authorization", `Bearer ${owner.token}`);
+
+    expect(getResponse.status).toBe(404);
+  });
+
+  it("rejects channel deletion without authentication", async () => {
+    const createResponse = await request(app)
+      .post(`/workspaces/${workspaceId}/channels`)
+      .set("Authorization", `Bearer ${owner.token}`)
+      .send({
+        name: "channel-auth-test",
+      });
+
+    expect(createResponse.status).toBe(201);
+
+    const channelId = createResponse.body.channel.id;
+
+    const response = await request(app).delete(
+      `/workspaces/${workspaceId}/channels/${channelId}`,
+    );
+
+    expect(response.status).toBe(401);
+  });
 });
